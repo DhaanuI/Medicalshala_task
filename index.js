@@ -5,7 +5,8 @@ require("dotenv").config()
 
 const { connection } = require("./config/db")
 const { userRoute } = require("./route/userRoute")
-const {logRequestDetails}= require("./middleware/logger.middleware")
+const { docRoute } = require("./route/docRoute")
+const { logRequestDetails } = require("./middleware/logger.middleware")
 
 
 app.get("/", (req, res) => {
@@ -18,6 +19,7 @@ app.use(logRequestDetails);
 
 
 app.use("/users", userRoute)
+app.use("/doctors", docRoute)
 
 
 app.listen(process.env.port, async () => {
