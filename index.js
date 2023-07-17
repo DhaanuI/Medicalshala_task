@@ -4,6 +4,8 @@ app.use(express.json())
 require("dotenv").config()
 
 const { connection } = require("./config/db")
+const { userRoute } = require("./route/userRoute")
+const {logRequestDetails}= require("./middleware/logger.middleware")
 
 
 app.get("/", (req, res) => {
@@ -11,6 +13,11 @@ app.get("/", (req, res) => {
 })
 
 
+// Apply the middleware to all routes
+app.use(logRequestDetails);
+
+
+app.use("/users", userRoute)
 
 
 app.listen(process.env.port, async () => {

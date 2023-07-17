@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 require("dotenv").config();
-// const { logger } = require("./logger.middleware")
+const { logger } = require("./logger.middleware")
 
 // authentication done here with the help of JWT
 const authenticate = (req, res, next) => {
@@ -12,12 +12,12 @@ const authenticate = (req, res, next) => {
             next()
         }
         else {
-            // logger.warn("You're NOT Authorized");
+            logger.warn("You're NOT Authorized");
             res.status(401).send({ "message": "Oops, You're NOT Authorized" });
         }
     }
     else {
-        // logger.warn("Please login again");
+        logger.warn("Please login again");
         res.status(401).send({ "message": "Please login again" })
     }
 }

@@ -4,9 +4,8 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require('express-validator');
 const { UserModel } = require("../model/UserModel");
 require("dotenv").config();
-var fast2sms = require('fast2sms');
-var options = { API_KEY: process.env.API_KEY };
-fast2sms.init(options)
+
+const { logger } = require("../middleware/logger.middleware")
 
 
 const userRegister = async (req, res) => {
@@ -18,7 +17,7 @@ const userRegister = async (req, res) => {
         return res.status(400).json({ "message": "Email is INVALID" });
     }
 
-    const { name, email, password } = req.body
+    const { name, email, password, phoneNumber } = req.body
 
     const userFound = await UserModel.findOne({ email })
     if (userFound) {
@@ -30,7 +29,7 @@ const userRegister = async (req, res) => {
 
             let dateFormat = moment().format('D-MM-YYYY');
             bcrypt.hash(password, 5, async function (err, hash) {
-                const data = new UserModel({ name, email, password: hash, registeredDate: dateFormat })
+                const data = new UserModel({ name, email, password: hash, phoneNumber, registeredDate: dateFormat })
                 await data.save()
 
                 logger.info('User added');
@@ -44,6 +43,7 @@ const userRegister = async (req, res) => {
         }
     }
 }
+
 
 // logging in via email
 const userLogin = async (req, res) => {
@@ -80,70 +80,6 @@ const userLogin = async (req, res) => {
         });
     }
     catch (err) {
-        logger.error('Login failed');
-        res.status(400).send({ "ERROR": err })
-    }
-}
-
-// checks mobile and triggers an otp
-const userLoginOTP = async (req, res) => {
-    const errors = validationResult(req);
-
-    // email validation using Express-Validation
-    if (!errors.isEmpty()) {
-        logger.error('PhoneNumber is INVALID');
-        return res.status(400).json({ "message": "PhoneNumber is INVALID" });
-    }
-
-    const { phone } = req.body
-    let data = await UserModel.findOne({ phone })
-    if (!data) {
-        logger.warn('No user found');
-        return res.send({ "message": "No user found" })
-    }
-    try {
-
-        const otp = Math.floor(1000 + Math.random() * 9000); 
-        const otpData = await fast2sms.send({ message: `Your OTP : ${otp}, Please enter this OTP to complete your Login`, to: phone });
-        data.phoneOtp = otp.toString();
-
-        res.send({ "message": "OTP is sent to the registered Mobile" })
-
-    }
-    catch (err) {
-        logger.error('Login failed');
-        res.status(400).send({ "ERROR": err })
-    }
-}
-
-
-//verify OTP
-const verifyOTP = async (req, res) => {
-    const { phone, otp } = req.body
-    let data = await UserModel.findOne({ phone })
-    if (!data) {
-        logger.warn('No user found');
-        return res.send({ "message": "No user found" })
-    }
-    try {
-        if (data.phoneOtp !== otp) {
-            return res.send({ "message": "Invalid/Incorrect OTP" })
-        }
-        else {
-            var token = jwt.sign({ userID: data._id }, process.env.key, { expiresIn: 3 * 60 * 60 });
-            data.phoneOtp = ""
-            logger.info('Validation done during LOGIN');
-            res.status(201).send({
-                "message": "Validation done",
-                "token": token,
-                "name": data.name,
-                "id": data._id
-            })
-        }
-
-    }
-    catch (err) {
-        data.phoneOtp = ""
         logger.error('Login failed');
         res.status(400).send({ "ERROR": err })
     }
@@ -220,5 +156,5 @@ const userGet = async (req, res) => {
 
 
 module.exports = {
-    userRegister, userLogin, userLoginOTP, verifyOTP, userPatch, userDelete, userGet
+    userRegister, userLogin, userPatch, userDelete, userGet
 }
