@@ -1,9 +1,9 @@
 const express = require("express")
 const mongoose = require('mongoose');
-
 const app = express()
 app.use(express.json())
 require("dotenv").config()
+
 
 const { connection } = require("./config/db")
 const { userRoute } = require("./route/userRoute")
@@ -15,7 +15,6 @@ const { logRequestDetails } = require("./middleware/logger.middleware")
 app.get("/", (req, res) => {
     res.send("Welcome to Backend")
 })
-
 
 
 app.use(logRequestDetails);

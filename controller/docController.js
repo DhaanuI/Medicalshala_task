@@ -27,7 +27,7 @@ const docRegister = async (req, res) => {
             let dateFormat = moment().format('D-MM-YYYY');
 
             bcrypt.hash(password, 5, async function (err, hash) {
-                const data = new DoctorModel({ name, email, password: hash, image, registeredDate: dateFormat, role, specialization, videoCall })
+                const data = new DoctorModel({ name, email, password: hash, registeredDate: dateFormat, specialization })
                 await data.save()
                 res.status(201).send({ "message": "Doctor Registered" })
             });
