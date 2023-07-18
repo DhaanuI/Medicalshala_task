@@ -5,8 +5,7 @@ const doctorSchema = mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     registeredDate: { type: String },            // note down the date registered
-    specialization: { type: String, enum: ["general", "heart", "kidney"], default: "general" },
-    videoCall: { type: String, enum: ["YES", "NO"], default: "NO" },
+    specialization: { type: String, enum: ["general", "heart", "kidney"], default: "general" }
 })
 
 const DoctorModel = mongoose.model("doctor", doctorSchema)

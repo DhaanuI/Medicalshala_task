@@ -8,6 +8,7 @@ require("dotenv").config()
 const { connection } = require("./config/db")
 const { userRoute } = require("./route/userRoute")
 const { doctorRoute } = require("./route/docRoute")
+const { appointmentRoute } = require("./route/appointmentRoute")
 const { logRequestDetails } = require("./middleware/logger.middleware")
 
 
@@ -16,13 +17,13 @@ app.get("/", (req, res) => {
 })
 
 
-// Apply the middleware to all routes
+
 app.use(logRequestDetails);
 
 
 app.use("/users", userRoute)
 app.use("/doctors", doctorRoute)
-
+app.use("/appointments", appointmentRoute)
 
 
 const connectWithRetry = () => {
@@ -48,5 +49,5 @@ mongoose.connection.on('disconnected', () => {
 
 app.listen(process.env.port, async () => {
     // Initial connection attempt
-    await connectWithRetry();
+    connectWithRetry();
 })

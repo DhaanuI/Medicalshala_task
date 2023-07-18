@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 
 const { authenticate } = require("../middleware/authenticate.middleware")
-const { appointmentAdd, appointmentGet, appointmentPatch, appointmentDelete, appointmentbyUsers, appointmentbyDoc } = require("../controller/userController");
+const { appointmentAdd, appointmentGet, appointmentPatch, appointmentDelete, appointmentbyUsers, appointmentbyDoc } = require("../controller/appointmentController");
 
 const appointmentRoute = express.Router();
 appointmentRoute.use(express.json());

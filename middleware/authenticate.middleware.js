@@ -8,7 +8,7 @@ const authenticate = (req, res, next) => {
     if (token) {
         let decoded = jwt.verify(token, process.env.key);
         if (decoded) {
-            req.body.userID = decoded.patientID || decoded.doctorID
+            req.body.userID = decoded.userID || decoded.doctorID
             next()
         }
         else {

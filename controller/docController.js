@@ -17,7 +17,7 @@ const docRegister = async (req, res) => {
         return res.status(400).json({ "message": "Email is INVALID" });
     }
 
-    const { name, email, password, specialization, videoCall } = req.body
+    const { name, email, password, specialization } = req.body
     const doctorFound = await DoctorModel.findOne({ email })
     if (doctorFound) {
         res.status(409).send({ "message": "Already doctor registered" })
@@ -59,11 +59,10 @@ const docLogin = async (req, res) => {
         bcrypt.compare(password, data.password, function (err, result) {
             if (result) {
                 var token = jwt.sign({ doctorID: data._id }, process.env.key);
-                var refreshtoken = jwt.sign({ doctorID: data._id }, process.env.key, { expiresIn: 60 * 1000 });
+
                 res.status(201).send({
                     "message": "Validation done",
                     "token": token,
-                    "refresh": refreshtoken,
                     "name": data.name,
                     "id": data._id
                 })
